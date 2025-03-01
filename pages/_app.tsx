@@ -57,7 +57,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Head>
         <title>ShopHub - Your Premium Shopping Destination</title>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
-        <meta name="description" content="Discover amazing products at great prices on ShopHub" />
+        <meta name="description" content="Discover amazing products at great prices on ShopHub - your one-stop shop for quality items" />
+        <meta name="theme-color" content="#556cd6" />
+        <link rel="icon" href="/shophub/favicon.ico" />
       </Head>
 
       {/* Google Tag Manager */}
