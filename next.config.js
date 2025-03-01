@@ -4,8 +4,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  basePath: '/shophub',
-  assetPrefix: '/shophub/',
+  // Only apply basePath and assetPrefix in production
+  basePath: process.env.NODE_ENV === 'production' ? '/shophub' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/shophub/' : '',
 };
 
 module.exports = nextConfig; 

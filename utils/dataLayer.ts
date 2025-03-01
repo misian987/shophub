@@ -119,4 +119,48 @@ export const trackPurchase = (transaction: {
       },
     },
   });
+};
+
+import { Product } from '../types';
+
+export const trackViewItemList = (items: Array<{
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+}>, listName: string = 'Product List') => {
+  pushToDataLayer({
+    event: 'view_item_list',
+    ecommerce: {
+      item_list_name: listName,
+      items: items.map((product, index) => ({
+        item_id: product.id,
+        item_name: product.name,
+        price: product.price,
+        item_category: product.category,
+        index: index + 1,
+      })),
+    },
+  });
+};
+
+export const trackSelectItem = (product: {
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+}, index: number, listName: string = 'Product List') => {
+  pushToDataLayer({
+    event: 'select_item',
+    ecommerce: {
+      item_list_name: listName,
+      items: [{
+        item_id: product.id,
+        item_name: product.name,
+        price: product.price,
+        item_category: product.category,
+        index: index + 1,
+      }],
+    },
+  });
 }; 

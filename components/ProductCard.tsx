@@ -2,14 +2,22 @@ import { Card, CardContent, CardMedia, Typography, Button, Box } from '@mui/mate
 import { useRouter } from 'next/router';
 import { Product } from '../types';
 import { useCart } from '../context/CartContext';
+import { trackSelectItem } from '../utils/dataLayer';
 
 interface ProductCardProps {
   product: Product;
+  index: number;
+  listName: string;
 }
 
-export const ProductCard = ({ product }: ProductCardProps) => {
+export const ProductCard = ({ product, index, listName }: ProductCardProps) => {
   const router = useRouter();
   const { addToCart } = useCart();
+
+  const handleProductClick = () => {
+    trackSelectItem(product, index, listName);
+    router.push(`/product/${product.id}`);
+  };
 
   return (
     <Card
@@ -30,7 +38,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         image={product.image}
         alt={product.name}
         sx={{ cursor: 'pointer' }}
-        onClick={() => router.push(`/product/${product.id}`)}
+        onClick={handleProductClick}
       />
       <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <Typography
@@ -41,7 +49,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             cursor: 'pointer',
             '&:hover': { color: 'primary.main' },
           }}
-          onClick={() => router.push(`/product/${product.id}`)}
+          onClick={handleProductClick}
         >
           {product.name}
         </Typography>

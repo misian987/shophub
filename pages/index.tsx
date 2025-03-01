@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { products } from '../data/products';
-import { trackPageView } from '../utils/dataLayer';
+import { trackPageView, trackViewItemList } from '../utils/dataLayer';
 import { Navigation } from '../components/Navigation';
 import { ProductCard } from '../components/ProductCard';
 
@@ -34,6 +34,13 @@ const HomePage: NextPage = () => {
                          product.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  // Track view_item_list when filtered products change
+  useEffect(() => {
+    if (filteredProducts.length > 0) {
+      trackViewItemList(filteredProducts, `Product List - ${selectedCategory}`);
+    }
+  }, [filteredProducts, selectedCategory]);
 
   return (
     <>
@@ -95,9 +102,13 @@ const HomePage: NextPage = () => {
 
         {/* Products Grid */}
         <Grid container spacing={4}>
-          {filteredProducts.map((product) => (
+          {filteredProducts.map((product, index) => (
             <Grid item key={product.id} xs={12} sm={6} md={4}>
-              <ProductCard product={product} />
+              <ProductCard 
+                product={product} 
+                index={index}
+                listName={`Product List - ${selectedCategory}`}
+              />
             </Grid>
           ))}
         </Grid>
