@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import { Cart, CartItem, Product } from '../types';
-import { trackAddToCart } from '../utils/dataLayer';
+import { trackAddToCart, trackRemoveFromCart } from '../utils/dataLayer';
 
 interface CartContextType {
   cart: Cart;
@@ -22,7 +22,7 @@ const cartReducer = (state: Cart, action: CartAction): Cart => {
   switch (action.type) {
     case 'ADD_TO_CART': {
       const existingItemIndex = state.items.findIndex(
-        item => item.product.id === action.payload.id
+        item => item.id === action.payload.id
       );
 
       if (existingItemIndex > -1) {
@@ -36,8 +36,11 @@ const cartReducer = (state: Cart, action: CartAction): Cart => {
       }
 
       const newItem: CartItem = {
-        product: action.payload,
+        id: action.payload.id,
+        name: action.payload.name,
+        price: action.payload.price,
         quantity: 1,
+        image: action.payload.image,
       };
 
       return {
@@ -48,9 +51,7 @@ const cartReducer = (state: Cart, action: CartAction): Cart => {
     }
 
     case 'REMOVE_FROM_CART': {
-      const newItems = state.items.filter(
-        item => item.product.id !== action.payload
-      );
+      const newItems = state.items.filter(item => item.id !== action.payload);
       return {
         ...state,
         items: newItems,
@@ -60,7 +61,7 @@ const cartReducer = (state: Cart, action: CartAction): Cart => {
 
     case 'UPDATE_QUANTITY': {
       const newItems = state.items.map(item =>
-        item.product.id === action.payload.productId
+        item.id === action.payload.productId
           ? { ...item, quantity: action.payload.quantity }
           : item
       );
@@ -83,7 +84,7 @@ const cartReducer = (state: Cart, action: CartAction): Cart => {
 };
 
 const calculateTotal = (items: CartItem[]): number => {
-  return items.reduce((total, item) => total + item.product.price * item.quantity, 0);
+  return items.reduce((total, item) => total + item.price * item.quantity, 0);
 };
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -91,19 +92,26 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const addToCart = (product: Product) => {
     dispatch({ type: 'ADD_TO_CART', payload: product });
-    trackAddToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      quantity: 1,
-    });
+    trackAddToCart(product, 1);
   };
 
   const removeFromCart = (productId: string) => {
+    const item = cart.items.find(item => item.id === productId);
+    if (item) {
+      trackRemoveFromCart(item, item.quantity);
+    }
     dispatch({ type: 'REMOVE_FROM_CART', payload: productId });
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
+    const item = cart.items.find(item => item.id === productId);
+    if (item) {
+      if (quantity > item.quantity) {
+        trackAddToCart(item, quantity - item.quantity);
+      } else if (quantity < item.quantity) {
+        trackRemoveFromCart(item, item.quantity - quantity);
+      }
+    }
     dispatch({ type: 'UPDATE_QUANTITY', payload: { productId, quantity } });
   };
 

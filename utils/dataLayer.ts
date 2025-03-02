@@ -6,14 +6,14 @@ interface DataLayerEvent {
 
 declare global {
   interface Window {
-    dataLayer: DataLayerEvent[];
+    dataLayer: any[];
   }
 }
 
 // Initialize dataLayer if it doesn't exist
-if (typeof window !== 'undefined') {
+export const initializeDataLayer = () => {
   window.dataLayer = window.dataLayer || [];
-}
+};
 
 // Push events to dataLayer
 export const pushToDataLayer = (event: DataLayerEvent) => {
@@ -23,13 +23,11 @@ export const pushToDataLayer = (event: DataLayerEvent) => {
 };
 
 // Predefined event types
-export const trackPageView = (pageTitle: string, pageUrl: string) => {
-  pushToDataLayer({
-    event: 'pageview',
-    page: {
-      title: pageTitle,
-      url: pageUrl,
-    },
+export const trackPageView = (title: string, path: string) => {
+  window.dataLayer.push({
+    event: 'page_view',
+    page_title: title,
+    page_path: path,
   });
 };
 
@@ -39,12 +37,15 @@ export const trackProductView = (product: {
   price: number;
   category: string;
 }) => {
-  pushToDataLayer({
-    event: 'product_view',
+  window.dataLayer.push({
+    event: 'view_item',
     ecommerce: {
-      detail: {
-        products: [product],
-      },
+      items: [{
+        item_id: product.id,
+        item_name: product.name,
+        price: product.price,
+        item_category: product.category,
+      }],
     },
   });
 };
@@ -53,40 +54,61 @@ export const trackAddToCart = (product: {
   id: string;
   name: string;
   price: number;
-  quantity: number;
-}) => {
-  pushToDataLayer({
+}, quantity: number) => {
+  window.dataLayer.push({
     event: 'add_to_cart',
     ecommerce: {
-      add: {
-        products: [product],
-      },
+      items: [{
+        item_id: product.id,
+        item_name: product.name,
+        price: product.price,
+        quantity: quantity,
+      }],
     },
   });
 };
 
-export const trackCheckoutStep = (step: number, stepName: string, options?: any) => {
-  pushToDataLayer({
-    event: 'checkout',
+export const trackRemoveFromCart = (product: {
+  id: string;
+  name: string;
+  price: number;
+}, quantity: number) => {
+  window.dataLayer.push({
+    event: 'remove_from_cart',
+    ecommerce: {
+      items: [{
+        item_id: product.id,
+        item_name: product.name,
+        price: product.price,
+        quantity: quantity,
+      }],
+    },
+  });
+};
+
+export const trackCheckoutStep = (step: number, name: string) => {
+  window.dataLayer.push({
+    event: 'checkout_progress',
     ecommerce: {
       checkout: {
-        actionField: { step, step_name: stepName },
-        ...options,
+        actionField: {
+          step: step,
+          option: name,
+        },
       },
     },
   });
 };
 
-export const trackCheckoutOption = (step: number, stepName: string, option: string, value: string) => {
-  pushToDataLayer({
+export const trackCheckoutOption = (step: number, checkoutOption: string, value: string) => {
+  window.dataLayer.push({
     event: 'checkout_option',
     ecommerce: {
       checkout_option: {
         actionField: {
-          step,
-          step_name: stepName,
-          option,
-          value,
+          step: step,
+          option: checkoutOption,
+          value: value,
         },
       },
     },
@@ -98,25 +120,27 @@ export const trackPurchase = (transaction: {
   revenue: number;
   tax: number;
   shipping: number;
-  products: Array<{
+  items: Array<{
     id: string;
     name: string;
     price: number;
     quantity: number;
   }>;
 }) => {
-  pushToDataLayer({
+  window.dataLayer.push({
     event: 'purchase',
     ecommerce: {
-      purchase: {
-        actionField: {
-          id: transaction.id,
-          revenue: transaction.revenue,
-          tax: transaction.tax,
-          shipping: transaction.shipping,
-        },
-        products: transaction.products,
-      },
+      transaction_id: transaction.id,
+      value: transaction.revenue,
+      tax: transaction.tax,
+      shipping: transaction.shipping,
+      currency: 'USD',
+      items: transaction.items.map(item => ({
+        item_id: item.id,
+        item_name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+      })),
     },
   });
 };
@@ -129,7 +153,7 @@ export const trackViewItemList = (items: Array<{
   price: number;
   category: string;
 }>, listName: string = 'Product List') => {
-  pushToDataLayer({
+  window.dataLayer.push({
     event: 'view_item_list',
     ecommerce: {
       item_list_name: listName,
@@ -150,7 +174,7 @@ export const trackSelectItem = (product: {
   price: number;
   category: string;
 }, index: number, listName: string = 'Product List') => {
-  pushToDataLayer({
+  window.dataLayer.push({
     event: 'select_item',
     ecommerce: {
       item_list_name: listName,

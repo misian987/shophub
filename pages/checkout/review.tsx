@@ -14,6 +14,7 @@ import {
   ListItemText,
 } from '@mui/material';
 import { Navigation } from '../../components/Navigation';
+import { CheckoutStepper } from '../../components/CheckoutStepper';
 import { useCart } from '../../context/CartContext';
 import { trackPageView, trackCheckoutStep, trackPurchase } from '../../utils/dataLayer';
 import { ShippingDetails, PaymentDetails } from '../../types';
@@ -27,46 +28,50 @@ const ReviewPage: NextPage = () => {
   useEffect(() => {
     trackPageView('Checkout - Review', window.location.pathname);
     trackCheckoutStep(3, 'Review');
+
+    // Load saved details
+    const savedShipping = localStorage.getItem('shippingDetails');
+    const savedPayment = localStorage.getItem('paymentDetails');
+
+    if (savedShipping) {
+      setShippingDetails(JSON.parse(savedShipping));
+    }
+    if (savedPayment) {
+      setPaymentDetails(JSON.parse(savedPayment));
+    }
   }, []);
 
   useEffect(() => {
-    // Load saved details
-    const loadedShippingDetails = localStorage.getItem('shippingDetails');
-    const loadedPaymentDetails = localStorage.getItem('paymentDetails');
-
-    if (!loadedShippingDetails || !loadedPaymentDetails || cart.items.length === 0) {
-      router.push('/checkout/shipping');
+    if (cart.items.length === 0) {
+      router.push('/cart');
       return;
     }
 
-    setShippingDetails(JSON.parse(loadedShippingDetails));
-    setPaymentDetails(JSON.parse(loadedPaymentDetails));
+    // Check if previous steps are completed
+    const shippingDetails = localStorage.getItem('shippingDetails');
+    const paymentDetails = localStorage.getItem('paymentDetails');
+    
+    if (!shippingDetails || !paymentDetails) {
+      router.push('/checkout/shipping');
+    }
   }, [cart.items.length, router]);
 
   const handlePlaceOrder = () => {
-    const orderId = `ORDER-${Date.now()}`;
+    // Track purchase
     const tax = cart.total * 0.1;
-    const shipping = 10.00;
-
     trackPurchase({
-      id: orderId,
+      id: `ORDER-${Date.now()}`,
       revenue: cart.total,
-      tax,
-      shipping,
-      products: cart.items.map((item) => ({
-        id: item.product.id,
-        name: item.product.name,
-        price: item.product.price,
-        quantity: item.quantity,
-      })),
+      tax: tax,
+      shipping: 0,
+      items: cart.items,
     });
 
-    // Clear stored data
+    // Clear cart and stored data
+    clearCart();
     localStorage.removeItem('shippingDetails');
     localStorage.removeItem('paymentDetails');
-    clearCart();
-    
-    router.push('/thank-you');
+    router.push('/checkout/confirmation');
   };
 
   if (!shippingDetails || !paymentDetails) {
@@ -76,102 +81,106 @@ const ReviewPage: NextPage = () => {
   return (
     <>
       <Navigation />
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Paper sx={{ p: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            Review Your Order
-          </Typography>
-
-          <Box sx={{ mt: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              Shipping Information
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <Typography>
-                  {shippingDetails.firstName} {shippingDetails.lastName}
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <CheckoutStepper />
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={8}>
+            <Paper sx={{ p: 4 }}>
+              <Typography variant="h4" component="h1" gutterBottom>
+                Review Order
+              </Typography>
+              <Box sx={{ mt: 4 }}>
+                <Typography variant="h6" gutterBottom>
+                  Shipping Information
                 </Typography>
-                <Typography>{shippingDetails.email}</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography>{shippingDetails.address}</Typography>
-                <Typography>
-                  {shippingDetails.city}, {shippingDetails.state} {shippingDetails.zipCode}
+                <List>
+                  <ListItem>
+                    <ListItemText
+                      primary={`${shippingDetails.firstName} ${shippingDetails.lastName}`}
+                      secondary={shippingDetails.email}
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemText
+                      primary="Shipping Address"
+                      secondary={`${shippingDetails.address}, ${shippingDetails.city}, ${shippingDetails.state} ${shippingDetails.zipCode}, ${shippingDetails.country}`}
+                    />
+                  </ListItem>
+                </List>
+                <Divider sx={{ my: 3 }} />
+                <Typography variant="h6" gutterBottom>
+                  Payment Information
                 </Typography>
-                <Typography>{shippingDetails.country}</Typography>
-              </Grid>
-            </Grid>
-          </Box>
-
-          <Divider sx={{ my: 4 }} />
-
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Payment Information
-            </Typography>
-            <Typography>
-              Card ending in {paymentDetails.cardNumber.slice(-4)}
-            </Typography>
-            <Typography>{paymentDetails.cardHolder}</Typography>
-            <Typography>Expires: {paymentDetails.expiryDate}</Typography>
-          </Box>
-
-          <Divider sx={{ my: 4 }} />
-
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Order Summary
-            </Typography>
-            <List>
-              {cart.items.map((item) => (
-                <ListItem key={item.product.id}>
-                  <ListItemText
-                    primary={item.product.name}
-                    secondary={`Quantity: ${item.quantity}`}
-                  />
-                  <Typography>
-                    ${(item.product.price * item.quantity).toFixed(2)}
-                  </Typography>
-                </ListItem>
-              ))}
+                <List>
+                  <ListItem>
+                    <ListItemText
+                      primary="Payment Method"
+                      secondary={paymentDetails.paymentMethod === 'credit' ? 'Credit Card' : 'Debit Card'}
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemText
+                      primary="Card Holder"
+                      secondary={paymentDetails.cardName || 'Not available'}
+                    />
+                  </ListItem>
+                </List>
+                <Divider sx={{ my: 3 }} />
+                <Typography variant="h6" gutterBottom>
+                  Order Items
+                </Typography>
+                <List>
+                  {cart.items.map((item) => (
+                    <ListItem key={item.id}>
+                      <ListItemText
+                        primary={item.name}
+                        secondary={`Quantity: ${item.quantity}`}
+                      />
+                      <Typography>
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </Typography>
+                    </ListItem>
+                  ))}
+                </List>
+                <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => router.push('/checkout/payment')}
+                  >
+                    Back to Payment
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handlePlaceOrder}
+                  >
+                    Place Order
+                  </Button>
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Paper sx={{ p: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                Order Summary
+              </Typography>
               <Divider sx={{ my: 2 }} />
-              <ListItem>
-                <ListItemText primary="Subtotal" />
-                <Typography>${cart.total.toFixed(2)}</Typography>
-              </ListItem>
-              <ListItem>
-                <ListItemText primary="Tax (10%)" />
-                <Typography>${(cart.total * 0.1).toFixed(2)}</Typography>
-              </ListItem>
-              <ListItem>
-                <ListItemText primary="Shipping" />
-                <Typography>$10.00</Typography>
-              </ListItem>
-              <ListItem>
-                <ListItemText primary="Total" />
-                <Typography variant="h6" color="primary">
-                  ${(cart.total + cart.total * 0.1 + 10).toFixed(2)}
+              <Box sx={{ mb: 2 }}>
+                <Typography>
+                  Items ({cart.items.reduce((total, item) => total + item.quantity, 0)}):
+                  ${cart.total.toFixed(2)}
                 </Typography>
-              </ListItem>
-            </List>
-          </Box>
-
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
-            <Button
-              variant="outlined"
-              onClick={() => router.push('/checkout/payment')}
-            >
-              Back to Payment
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handlePlaceOrder}
-            >
-              Place Order
-            </Button>
-          </Box>
-        </Paper>
+                <Typography>Shipping: Free</Typography>
+                <Typography>Tax: ${(cart.total * 0.1).toFixed(2)}</Typography>
+              </Box>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6">
+                Total: ${(cart.total * 1.1).toFixed(2)}
+              </Typography>
+            </Paper>
+          </Grid>
+        </Grid>
       </Container>
     </>
   );

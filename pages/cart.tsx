@@ -13,6 +13,7 @@ import {
   Button,
   IconButton,
   Box,
+  Avatar,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -27,8 +28,10 @@ const CartPage: NextPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    trackPageView('Shopping Cart', window.location.pathname);
-  }, []);
+    if (router.isReady) {
+      trackPageView('Shopping Cart', router.asPath);
+    }
+  }, [router.isReady]);
 
   if (cart.items.length === 0) {
     return (
@@ -38,7 +41,19 @@ const CartPage: NextPage = () => {
           <Typography variant="h4" component="h1" gutterBottom>
             Your Cart is Empty
           </Typography>
-          <Button variant="contained" color="primary" onClick={() => router.push('/')}>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={() => router.push('/')}
+            sx={{
+              background: 'linear-gradient(45deg, #556cd6 30%, #19857b 90%)',
+              boxShadow: '0 3px 5px 2px rgba(85, 108, 214, .3)',
+              '&:hover': {
+                background: 'linear-gradient(45deg, #19857b 30%, #556cd6 90%)',
+                boxShadow: '0 4px 6px 2px rgba(85, 108, 214, .4)',
+              },
+            }}
+          >
             Continue Shopping
           </Button>
         </Container>
@@ -66,33 +81,43 @@ const CartPage: NextPage = () => {
             </TableHead>
             <TableBody>
               {cart.items.map((item) => (
-                <TableRow key={item.product.id}>
-                  <TableCell>{item.product.name}</TableCell>
-                  <TableCell align="right">${item.product.price.toFixed(2)}</TableCell>
+                <TableRow key={item.id}>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <Avatar
+                        src={item.image}
+                        alt={item.name}
+                        variant="rounded"
+                        sx={{ width: 60, height: 60 }}
+                      />
+                      <Typography>{item.name}</Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell align="right">${item.price.toFixed(2)}</TableCell>
                   <TableCell align="center">
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <IconButton
                         size="small"
-                        onClick={() => updateQuantity(item.product.id, Math.max(0, item.quantity - 1))}
+                        onClick={() => updateQuantity(item.id, Math.max(0, item.quantity - 1))}
                       >
                         <RemoveIcon />
                       </IconButton>
                       <Typography sx={{ mx: 2 }}>{item.quantity}</Typography>
                       <IconButton
                         size="small"
-                        onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
                       >
                         <AddIcon />
                       </IconButton>
                     </Box>
                   </TableCell>
                   <TableCell align="right">
-                    ${(item.product.price * item.quantity).toFixed(2)}
+                    ${(item.price * item.quantity).toFixed(2)}
                   </TableCell>
                   <TableCell align="center">
                     <IconButton
                       color="error"
-                      onClick={() => removeFromCart(item.product.id)}
+                      onClick={() => removeFromCart(item.id)}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -102,8 +127,8 @@ const CartPage: NextPage = () => {
             </TableBody>
           </Table>
         </TableContainer>
-        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-          <Typography variant="h5">
+        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2, alignItems: 'center' }}>
+          <Typography variant="h5" sx={{ fontWeight: 600 }}>
             Total: ${cart.total.toFixed(2)}
           </Typography>
           <Button
@@ -111,6 +136,14 @@ const CartPage: NextPage = () => {
             color="primary"
             size="large"
             onClick={() => router.push('/checkout/shipping')}
+            sx={{
+              background: 'linear-gradient(45deg, #556cd6 30%, #19857b 90%)',
+              boxShadow: '0 3px 5px 2px rgba(85, 108, 214, .3)',
+              '&:hover': {
+                background: 'linear-gradient(45deg, #19857b 30%, #556cd6 90%)',
+                boxShadow: '0 4px 6px 2px rgba(85, 108, 214, .4)',
+              },
+            }}
           >
             Proceed to Checkout
           </Button>

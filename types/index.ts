@@ -8,8 +8,11 @@ export interface Product {
 }
 
 export interface CartItem {
-  product: Product;
+  id: string;
+  name: string;
+  price: number;
   quantity: number;
+  image: string;
 }
 
 export interface Cart {
@@ -30,9 +33,10 @@ export interface ShippingDetails {
 
 export interface PaymentDetails {
   cardNumber: string;
-  cardHolder: string;
+  cardName: string;
   expiryDate: string;
   cvv: string;
+  paymentMethod: 'credit' | 'debit';
 }
 
 export interface Order {

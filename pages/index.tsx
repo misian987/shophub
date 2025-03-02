@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import {
   Container,
   Grid,
@@ -17,12 +18,15 @@ import { Navigation } from '../components/Navigation';
 import { ProductCard } from '../components/ProductCard';
 
 const HomePage: NextPage = () => {
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
-    trackPageView('Home - Product Listing', window.location.pathname);
-  }, []);
+    if (router.isReady) {
+      trackPageView('Home - Product Listing', router.asPath);
+    }
+  }, [router.isReady]);
 
   // Get unique categories
   const categories = ['all', ...Array.from(new Set(products.map((product) => product.category)))];

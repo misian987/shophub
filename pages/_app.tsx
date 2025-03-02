@@ -6,6 +6,8 @@ import { createTheme } from '@mui/material/styles';
 import { CartProvider } from '../context/CartContext';
 import Script from 'next/script';
 import { Box } from '@mui/material';
+import { useEffect } from 'react';
+import { initializeDataLayer } from '../utils/dataLayer';
 
 // Create a theme instance
 const theme = createTheme({
@@ -52,6 +54,10 @@ const theme = createTheme({
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
+  useEffect(() => {
+    initializeDataLayer();
+  }, []);
+
   return (
     <>
       <Head>
@@ -69,9 +75,19 @@ function MyApp({ Component, pageProps }: AppProps) {
           new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
           j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-          })(window,document,'script','dataLayer','GTM-XXXXXXX');
+          })(window,document,'script','dataLayer','GTM-MHXV9WP');
         `}
       </Script>
+
+      {/* Google Tag Manager (noscript) */}
+      <noscript>
+        <iframe
+          src="https://www.googletagmanager.com/ns.html?id=GTM-MHXV9WP"
+          height="0"
+          width="0"
+          style={{ display: 'none', visibility: 'hidden' }}
+        />
+      </noscript>
 
       <ThemeProvider theme={theme}>
         <CssBaseline />

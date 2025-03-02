@@ -1,13 +1,11 @@
-import { AppBar, Toolbar, Button, Badge, Box } from '@mui/material';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { useRouter } from 'next/router';
+import { AppBar, Toolbar, Button, Badge, Box, IconButton } from '@mui/material';
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import Link from 'next/link';
 import { useCart } from '../context/CartContext';
 import { Logo } from './Logo';
 
 export const Navigation = () => {
-  const router = useRouter();
   const { cart } = useCart();
-
   const cartItemCount = cart.items.reduce((total, item) => total + item.quantity, 0);
 
   return (
@@ -22,41 +20,33 @@ export const Navigation = () => {
       <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, sm: 4 } }}>
         <Logo />
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => router.push('/cart')}
-            startIcon={
-              <Badge 
-                badgeContent={cartItemCount} 
-                color="error"
+          <Link href="/cart" passHref style={{ textDecoration: 'none' }}>
+            <IconButton
+              component="span"
+              sx={{
+                color: 'rgba(25, 133, 123, 0.9)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'scale(1.1)',
+                  color: 'rgba(85, 108, 214, 0.9)',
+                },
+              }}
+            >
+              <Badge
+                badgeContent={cartItemCount}
+                color="primary"
                 sx={{
                   '& .MuiBadge-badge': {
-                    bgcolor: 'rgba(25, 133, 123, 0.9)',
+                    bgcolor: 'rgba(85, 108, 214, 0.9)',
                     color: 'white',
+                    fontWeight: 'bold',
                   },
                 }}
               >
-                <ShoppingCartIcon />
+                <ShoppingCartOutlinedIcon sx={{ fontSize: '1.75rem' }} />
               </Badge>
-            }
-            sx={{
-              borderRadius: '50px',
-              px: 3,
-              py: 1,
-              textTransform: 'none',
-              fontSize: '1rem',
-              fontWeight: 500,
-              background: 'linear-gradient(145deg, rgba(85, 108, 214, 0.9) 0%, rgba(25, 133, 123, 0.9) 100%)',
-              boxShadow: '0 3px 12px rgba(85, 108, 214, 0.15)',
-              '&:hover': {
-                background: 'linear-gradient(145deg, rgba(25, 133, 123, 0.9) 0%, rgba(85, 108, 214, 0.9) 100%)',
-                boxShadow: '0 4px 15px rgba(85, 108, 214, 0.2)',
-              },
-            }}
-          >
-            Cart
-          </Button>
+            </IconButton>
+          </Link>
         </Box>
       </Toolbar>
     </AppBar>
