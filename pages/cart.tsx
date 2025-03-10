@@ -19,9 +19,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { useCart } from '../context/CartContext';
-import { trackPageView } from '../utils/dataLayer';
+import { trackPageView, trackRemoveFromCart, trackBeginCheckout } from '../utils/dataLayer';
 import { useRouter } from 'next/router';
 import { Navigation } from '../components/Navigation';
+import { CartItem } from '../types';
 
 const CartPage: NextPage = () => {
   const { cart, removeFromCart, updateQuantity } = useCart();
@@ -32,6 +33,28 @@ const CartPage: NextPage = () => {
       trackPageView('Shopping Cart', router.asPath);
     }
   }, [router.isReady]);
+
+  const handleRemoveFromCart = (item: CartItem) => {
+    trackRemoveFromCart({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      category: item.category,
+      quantity: item.quantity,
+    });
+    removeFromCart(item.id);
+  };
+
+  const handleProceedToCheckout = () => {
+    trackBeginCheckout(cart.items.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      category: item.category,
+      quantity: item.quantity,
+    })));
+    router.push('/checkout/shipping');
+  };
 
   if (cart.items.length === 0) {
     return (
@@ -117,7 +140,7 @@ const CartPage: NextPage = () => {
                   <TableCell align="center">
                     <IconButton
                       color="error"
-                      onClick={() => removeFromCart(item.id)}
+                      onClick={() => handleRemoveFromCart(item)}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -135,7 +158,7 @@ const CartPage: NextPage = () => {
             variant="contained"
             color="primary"
             size="large"
-            onClick={() => router.push('/checkout/shipping')}
+            onClick={handleProceedToCheckout}
             sx={{
               background: 'linear-gradient(45deg, #556cd6 30%, #19857b 90%)',
               boxShadow: '0 3px 5px 2px rgba(85, 108, 214, .3)',

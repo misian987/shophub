@@ -41,6 +41,7 @@ const cartReducer = (state: Cart, action: CartAction): Cart => {
         price: action.payload.price,
         quantity: 1,
         image: action.payload.image,
+        category: action.payload.category,
       };
 
       return {
@@ -92,13 +93,25 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const addToCart = (product: Product) => {
     dispatch({ type: 'ADD_TO_CART', payload: product });
-    trackAddToCart(product, 1);
+    trackAddToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      category: product.category,
+      quantity: 1,
+    });
   };
 
   const removeFromCart = (productId: string) => {
     const item = cart.items.find(item => item.id === productId);
     if (item) {
-      trackRemoveFromCart(item, item.quantity);
+      trackRemoveFromCart({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        category: item.category,
+        quantity: item.quantity,
+      });
     }
     dispatch({ type: 'REMOVE_FROM_CART', payload: productId });
   };
@@ -107,9 +120,21 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const item = cart.items.find(item => item.id === productId);
     if (item) {
       if (quantity > item.quantity) {
-        trackAddToCart(item, quantity - item.quantity);
+        trackAddToCart({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          category: item.category,
+          quantity: quantity - item.quantity,
+        });
       } else if (quantity < item.quantity) {
-        trackRemoveFromCart(item, item.quantity - quantity);
+        trackRemoveFromCart({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          category: item.category,
+          quantity: item.quantity - quantity,
+        });
       }
     }
     dispatch({ type: 'UPDATE_QUANTITY', payload: { productId, quantity } });
