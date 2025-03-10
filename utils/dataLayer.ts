@@ -208,6 +208,9 @@ export const trackAddToCart = trackSafely((product: {
   coupon?: string;
   discount?: number;
 }) => {
+  // Clear previous ecommerce data
+  window.dataLayer.push({ ecommerce: null });
+
   window.dataLayer.push({
     event: 'add_to_cart',
     pr1: 'add_to_cart',
@@ -239,6 +242,9 @@ export const trackRemoveFromCart = trackSafely((product: {
   brand?: string;
   variant?: string;
 }) => {
+  // Clear previous ecommerce data
+  window.dataLayer.push({ ecommerce: null });
+
   window.dataLayer.push({
     event: 'remove_from_cart',
     pr1: 'remove_from_cart',
@@ -269,6 +275,9 @@ export const trackBeginCheckout = trackSafely((items: Array<{
   coupon?: string;
   discount?: number;
 }>, currency: string = 'USD') => {
+  // Clear previous ecommerce data
+  window.dataLayer.push({ ecommerce: null });
+
   const value = items.reduce((total, item) => 
     total + (item.price * (item.quantity || 1)), 0
   );
@@ -303,6 +312,9 @@ export const trackAddShippingInfo = trackSafely((items: Array<{
   brand?: string;
   variant?: string;
 }>, shippingTier: string, currency: string = 'USD') => {
+  // Clear previous ecommerce data
+  window.dataLayer.push({ ecommerce: null });
+
   const value = items.reduce((total, item) => 
     total + (item.price * (item.quantity || 1)), 0
   );
@@ -338,6 +350,9 @@ export const trackAddPaymentInfo = trackSafely((items: Array<{
   coupon?: string;
   discount?: number;
 }>, paymentType: string, currency: string = 'USD') => {
+  // Clear previous ecommerce data
+  window.dataLayer.push({ ecommerce: null });
+
   const value = items.reduce((total, item) => 
     total + (item.price * (item.quantity || 1)), 0
   );
@@ -382,6 +397,9 @@ export const trackPurchase = trackSafely((transaction: {
     discount?: number;
   }>;
 }) => {
+  // Clear previous ecommerce data
+  window.dataLayer.push({ ecommerce: null });
+
   window.dataLayer.push({
     event: 'purchase',
     pr1: 'purchase',
@@ -421,6 +439,9 @@ export const trackViewPromotion = trackSafely((promotion: {
     variant?: string;
   }>;
 }) => {
+  // Clear previous ecommerce data
+  window.dataLayer.push({ ecommerce: null });
+
   window.dataLayer.push({
     event: 'view_promotion',
     pr1: 'view_promotion',
@@ -457,6 +478,9 @@ export const trackSelectPromotion = trackSafely((promotion: {
     variant?: string;
   }>;
 }) => {
+  // Clear previous ecommerce data
+  window.dataLayer.push({ ecommerce: null });
+
   window.dataLayer.push({
     event: 'select_promotion',
     pr1: 'select_promotion',
