@@ -64,7 +64,8 @@ const PaymentPage: NextPage = () => {
     setPaymentDetails((prev) => ({ ...prev, [field]: value }));
 
     if (field === 'paymentMethod') {
-      trackCheckoutOption(2, 'Payment Method', value);
+      const paymentLabel = value === 'credit' ? 'Credit Card' : 'Debit Card';
+      trackCheckoutOption(2, paymentLabel);
     }
   };
 
