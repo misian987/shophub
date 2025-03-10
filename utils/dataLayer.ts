@@ -2,6 +2,8 @@
 interface DataLayerEvent {
   event: string;
   pr1: string;
+  page_title?: string;
+  page_path?: string;
   ecommerce?: {
     currency?: string;
     value?: number;
@@ -79,7 +81,7 @@ export const trackPageView = trackSafely((title: string, path: string) => {
     event: 'page_view',
     pr1: 'page_view',
     page_title: title,
-    page_path: path,
+    page_path: path
   });
 }, 'trackPageView');
 
