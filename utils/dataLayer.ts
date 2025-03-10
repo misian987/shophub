@@ -28,6 +28,7 @@ export const trackPageView = (title: string, path: string) => {
     event: 'page_view',
     page_title: title,
     page_path: path,
+    pr1: 'page_view',
   });
 };
 
@@ -47,6 +48,7 @@ export const trackViewItem = (product: {
 }) => {
   window.dataLayer.push({
     event: 'view_item',
+    pr1: 'view_item',
     ecommerce: {
       currency: product.currency || 'USD',
       value: product.price * (product.quantity || 1),
@@ -78,6 +80,7 @@ export const trackViewItemList = (items: Array<{
 }>, listName: string = 'Product List', listId?: string) => {
   window.dataLayer.push({
     event: 'view_item_list',
+    pr1: 'view_item_list',
     ecommerce: {
       item_list_name: listName,
       item_list_id: listId,
@@ -107,6 +110,7 @@ export const trackSelectItem = (product: {
 }, listName: string = 'Product List', listId?: string) => {
   window.dataLayer.push({
     event: 'select_item',
+    pr1: 'select_item',
     ecommerce: {
       item_list_name: listName,
       item_list_id: listId,
@@ -138,6 +142,7 @@ export const trackAddToCart = (product: {
 }) => {
   window.dataLayer.push({
     event: 'add_to_cart',
+    pr1: 'add_to_cart',
     ecommerce: {
       currency: product.currency || 'USD',
       value: product.price * (product.quantity || 1),
@@ -168,6 +173,7 @@ export const trackRemoveFromCart = (product: {
 }) => {
   window.dataLayer.push({
     event: 'remove_from_cart',
+    pr1: 'remove_from_cart',
     ecommerce: {
       currency: product.currency || 'USD',
       value: product.price * (product.quantity || 1),
@@ -201,6 +207,7 @@ export const trackBeginCheckout = (items: Array<{
 
   window.dataLayer.push({
     event: 'begin_checkout',
+    pr1: 'begin_checkout',
     ecommerce: {
       currency,
       value,
@@ -234,6 +241,7 @@ export const trackAddShippingInfo = (items: Array<{
 
   window.dataLayer.push({
     event: 'add_shipping_info',
+    pr1: 'add_shipping_info',
     ecommerce: {
       currency,
       value,
@@ -268,6 +276,7 @@ export const trackAddPaymentInfo = (items: Array<{
 
   window.dataLayer.push({
     event: 'add_payment_info',
+    pr1: 'add_payment_info',
     ecommerce: {
       currency,
       value,
@@ -307,6 +316,7 @@ export const trackPurchase = (transaction: {
 }) => {
   window.dataLayer.push({
     event: 'purchase',
+    pr1: 'purchase',
     ecommerce: {
       transaction_id: transaction.id,
       value: transaction.revenue,
@@ -345,6 +355,7 @@ export const trackViewPromotion = (promotion: {
 }) => {
   window.dataLayer.push({
     event: 'view_promotion',
+    pr1: 'view_promotion',
     ecommerce: {
       promotion_id: promotion.id,
       promotion_name: promotion.name,
@@ -380,6 +391,7 @@ export const trackSelectPromotion = (promotion: {
 }) => {
   window.dataLayer.push({
     event: 'select_promotion',
+    pr1: 'select_promotion',
     ecommerce: {
       promotion_id: promotion.id,
       promotion_name: promotion.name,
