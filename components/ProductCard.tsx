@@ -15,7 +15,10 @@ export const ProductCard = ({ product, index, listName }: ProductCardProps) => {
   const { addToCart } = useCart();
 
   const handleProductClick = () => {
-    trackSelectItem(product, index, listName);
+    trackSelectItem({
+      ...product,
+      index: index
+    }, listName);
     router.push(`/product/${product.id}`);
   };
 

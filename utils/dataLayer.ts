@@ -120,7 +120,7 @@ export const trackSelectItem = (product: {
         price: product.price,
         item_category: product.category,
         quantity: product.quantity || 1,
-        index: product.index,
+        index: product.index?.toString(),
         item_brand: product.brand,
         item_variant: product.variant,
       }],
