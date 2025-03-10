@@ -121,7 +121,7 @@ export const trackViewItem = trackSafely((product: {
   });
 }, 'trackViewItem');
 
-export const trackViewItemList = (items: Array<{
+export const trackViewItemList = trackSafely((items: Array<{
   id: string;
   name: string;
   price: number;
@@ -149,9 +149,9 @@ export const trackViewItemList = (items: Array<{
       })),
     },
   });
-};
+}, 'trackViewItemList');
 
-export const trackSelectItem = (product: {
+export const trackSelectItem = trackSafely((product: {
   id: string;
   name: string;
   price: number;
@@ -179,9 +179,9 @@ export const trackSelectItem = (product: {
       }],
     },
   });
-};
+}, 'trackSelectItem');
 
-export const trackAddToCart = (product: {
+export const trackAddToCart = trackSafely((product: {
   id: string;
   name: string;
   price: number;
@@ -212,9 +212,9 @@ export const trackAddToCart = (product: {
       }],
     },
   });
-};
+}, 'trackAddToCart');
 
-export const trackRemoveFromCart = (product: {
+export const trackRemoveFromCart = trackSafely((product: {
   id: string;
   name: string;
   price: number;
@@ -241,9 +241,9 @@ export const trackRemoveFromCart = (product: {
       }],
     },
   });
-};
+}, 'trackRemoveFromCart');
 
-export const trackBeginCheckout = (items: Array<{
+export const trackBeginCheckout = trackSafely((items: Array<{
   id: string;
   name: string;
   price: number;
@@ -277,9 +277,9 @@ export const trackBeginCheckout = (items: Array<{
       })),
     },
   });
-};
+}, 'trackBeginCheckout');
 
-export const trackAddShippingInfo = (items: Array<{
+export const trackAddShippingInfo = trackSafely((items: Array<{
   id: string;
   name: string;
   price: number;
@@ -310,9 +310,9 @@ export const trackAddShippingInfo = (items: Array<{
       })),
     },
   });
-};
+}, 'trackAddShippingInfo');
 
-export const trackAddPaymentInfo = (items: Array<{
+export const trackAddPaymentInfo = trackSafely((items: Array<{
   id: string;
   name: string;
   price: number;
@@ -347,9 +347,9 @@ export const trackAddPaymentInfo = (items: Array<{
       })),
     },
   });
-};
+}, 'trackAddPaymentInfo');
 
-export const trackPurchase = (transaction: {
+export const trackPurchase = trackSafely((transaction: {
   id: string;
   revenue: number;
   tax: number;
@@ -389,9 +389,9 @@ export const trackPurchase = (transaction: {
       })),
     },
   });
-};
+}, 'trackPurchase');
 
-export const trackViewPromotion = (promotion: {
+export const trackViewPromotion = trackSafely((promotion: {
   id: string;
   name: string;
   creative_name?: string;
@@ -425,9 +425,9 @@ export const trackViewPromotion = (promotion: {
       })),
     },
   });
-};
+}, 'trackViewPromotion');
 
-export const trackSelectPromotion = (promotion: {
+export const trackSelectPromotion = trackSafely((promotion: {
   id: string;
   name: string;
   creative_name?: string;
@@ -461,9 +461,9 @@ export const trackSelectPromotion = (promotion: {
       })),
     },
   });
-};
+}, 'trackSelectPromotion');
 
-export const trackCheckoutStep = (step: number, stepName: string) => {
+export const trackCheckoutStep = trackSafely((step: number, stepName: string) => {
   window.dataLayer.push({
     event: 'checkout_progress',
     pr1: 'checkout_progress',
@@ -472,9 +472,9 @@ export const trackCheckoutStep = (step: number, stepName: string) => {
       checkout_option: stepName
     }
   });
-};
+}, 'trackCheckoutStep');
 
-export const trackCheckoutOption = (step: number, option: string) => {
+export const trackCheckoutOption = trackSafely((step: number, option: string) => {
   window.dataLayer.push({
     event: 'checkout_option',
     pr1: 'checkout_option',
@@ -483,4 +483,4 @@ export const trackCheckoutOption = (step: number, option: string) => {
       checkout_option: option
     }
   });
-}; 
+}, 'trackCheckoutOption'); 
