@@ -17,7 +17,7 @@ export const ProductCard = ({ product, index, listName }: ProductCardProps) => {
   const handleProductClick = () => {
     trackSelectItem({
       ...product,
-      index: index
+      index
     }, listName);
     router.push(`/product/${product.id}`);
   };
