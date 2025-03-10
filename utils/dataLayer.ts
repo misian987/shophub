@@ -1,7 +1,34 @@
 // DataLayer type definitions
 interface DataLayerEvent {
   event: string;
-  [key: string]: any;
+  pr1: string;
+  ecommerce?: {
+    currency?: string;
+    value?: number;
+    items?: Array<{
+      item_id: string;
+      item_name: string;
+      price: number;
+      item_category: string;
+      quantity?: number;
+      index?: number;
+      item_brand?: string;
+      item_variant?: string;
+      item_list_name?: string;
+      item_list_id?: string;
+      coupon?: string;
+      discount?: number;
+    }>;
+    item_list_name?: string;
+    item_list_id?: string;
+    shipping_tier?: string;
+    payment_type?: string;
+    transaction_id?: string;
+    tax?: number;
+    shipping?: number;
+    checkout_step?: number;
+    checkout_option?: string;
+  };
 }
 
 declare global {
@@ -15,25 +42,49 @@ export const initializeDataLayer = () => {
   window.dataLayer = window.dataLayer || [];
 };
 
-// Push events to dataLayer
-export const pushToDataLayer = (event: DataLayerEvent) => {
-  if (typeof window !== 'undefined') {
-    window.dataLayer.push(event);
-  }
+// Error handling wrapper for tracking functions
+const trackSafely = <T extends (...args: any[]) => void>(
+  trackingFunction: T,
+  functionName: string
+): T => {
+  return ((...args: Parameters<T>) => {
+    try {
+      if (typeof window === 'undefined') {
+        console.warn(`${functionName} called during SSR, skipping`);
+        return;
+      }
+      if (!window.dataLayer) {
+        console.error('DataLayer not initialized');
+        initializeDataLayer();
+      }
+      trackingFunction(...args);
+    } catch (error) {
+      console.error(`Error in ${functionName}:`, error);
+      // You might want to send this error to your error tracking service
+    }
+  }) as T;
 };
 
-// Predefined event types
-export const trackPageView = (title: string, path: string) => {
+// Push events to dataLayer
+export const pushToDataLayer = trackSafely((event: DataLayerEvent) => {
+  window.dataLayer.push({
+    ...event,
+    pr1: event.event // Ensure pr1 matches event name
+  });
+}, 'pushToDataLayer');
+
+// Wrap all tracking functions with error handling
+export const trackPageView = trackSafely((title: string, path: string) => {
   window.dataLayer.push({
     event: 'page_view',
+    pr1: 'page_view',
     page_title: title,
     page_path: path,
-    pr1: 'page_view',
   });
-};
+}, 'trackPageView');
 
 // E-commerce Events
-export const trackViewItem = (product: {
+export const trackViewItem = trackSafely((product: {
   id: string;
   name: string;
   price: number;
@@ -66,7 +117,7 @@ export const trackViewItem = (product: {
       }],
     },
   });
-};
+}, 'trackViewItem');
 
 export const trackViewItemList = (items: Array<{
   id: string;
@@ -120,7 +171,7 @@ export const trackSelectItem = (product: {
         price: product.price,
         item_category: product.category,
         quantity: product.quantity || 1,
-        index: product.index?.toString(),
+        index: product.index,
         item_brand: product.brand,
         item_variant: product.variant,
       }],
@@ -407,5 +458,27 @@ export const trackSelectPromotion = (promotion: {
         item_variant: item.variant,
       })),
     },
+  });
+};
+
+export const trackCheckoutStep = (step: number, stepName: string) => {
+  window.dataLayer.push({
+    event: 'checkout_progress',
+    pr1: 'checkout_progress',
+    ecommerce: {
+      checkout_step: step,
+      checkout_option: stepName
+    }
+  });
+};
+
+export const trackCheckoutOption = (step: number, option: string) => {
+  window.dataLayer.push({
+    event: 'checkout_option',
+    pr1: 'checkout_option',
+    ecommerce: {
+      checkout_step: step,
+      checkout_option: option
+    }
   });
 }; 
