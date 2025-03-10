@@ -69,6 +69,9 @@ const trackSafely = <T extends (...args: any[]) => void>(
 
 // Push events to dataLayer
 export const pushToDataLayer = trackSafely((event: DataLayerEvent) => {
+  // Clear previous ecommerce data
+  window.dataLayer.push({ ecommerce: null });
+  
   window.dataLayer.push({
     ...event,
     pr1: event.event // Ensure pr1 matches event name
@@ -77,6 +80,9 @@ export const pushToDataLayer = trackSafely((event: DataLayerEvent) => {
 
 // Wrap all tracking functions with error handling
 export const trackPageView = trackSafely((title: string, path: string) => {
+  // Clear previous ecommerce data
+  window.dataLayer.push({ ecommerce: null });
+  
   window.dataLayer.push({
     event: 'page_view',
     pr1: 'page_view',
@@ -99,6 +105,9 @@ export const trackViewItem = trackSafely((product: {
   list_name?: string;
   list_id?: string;
 }) => {
+  // Clear previous ecommerce data
+  window.dataLayer.push({ ecommerce: null });
+
   window.dataLayer.push({
     event: 'view_item',
     pr1: 'view_item',
@@ -131,6 +140,9 @@ export const trackViewItemList = trackSafely((items: Array<{
   brand?: string;
   variant?: string;
 }>, listName: string = 'Product List', listId?: string) => {
+  // Clear previous ecommerce data
+  window.dataLayer.push({ ecommerce: null });
+
   window.dataLayer.push({
     event: 'view_item_list',
     pr1: 'view_item_list',
@@ -161,6 +173,9 @@ export const trackSelectItem = trackSafely((product: {
   brand?: string;
   variant?: string;
 }, listName: string = 'Product List', listId?: string) => {
+  // Clear previous ecommerce data
+  window.dataLayer.push({ ecommerce: null });
+
   window.dataLayer.push({
     event: 'select_item',
     pr1: 'select_item',
@@ -464,6 +479,9 @@ export const trackSelectPromotion = trackSafely((promotion: {
 }, 'trackSelectPromotion');
 
 export const trackCheckoutStep = trackSafely((step: number, stepName: string) => {
+  // Clear previous ecommerce data
+  window.dataLayer.push({ ecommerce: null });
+
   window.dataLayer.push({
     event: 'checkout_progress',
     pr1: 'checkout_progress',
@@ -475,6 +493,9 @@ export const trackCheckoutStep = trackSafely((step: number, stepName: string) =>
 }, 'trackCheckoutStep');
 
 export const trackCheckoutOption = trackSafely((step: number, option: string) => {
+  // Clear previous ecommerce data
+  window.dataLayer.push({ ecommerce: null });
+
   window.dataLayer.push({
     event: 'checkout_option',
     pr1: 'checkout_option',
