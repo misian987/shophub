@@ -14,7 +14,7 @@ import {
 import { Navigation } from '../../components/Navigation';
 import { products } from '../../data/products';
 import { useCart } from '../../context/CartContext';
-import { trackPageView, trackProductView } from '../../utils/dataLayer';
+import { trackPageView, trackViewItem } from '../../utils/dataLayer';
 import { Product } from '../../types';
 
 interface ProductPageProps {
@@ -28,7 +28,7 @@ const ProductPage: NextPage<ProductPageProps> = ({ product }) => {
   useEffect(() => {
     if (product) {
       trackPageView(`Product - ${product.name}`, window.location.pathname);
-      trackProductView({
+      trackViewItem({
         id: product.id,
         name: product.name,
         price: product.price,
