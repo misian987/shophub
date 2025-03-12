@@ -1,13 +1,13 @@
 // DataLayer type definitions
 interface DataLayerEvent {
   event: string;
-  pr1: string;
+  pr1?: string;  // Making pr1 optional as it's not needed for GA4
   page_title?: string;
   page_path?: string;
   ecommerce?: {
     currency?: string;
     value?: number;
-    items?: Array<{
+    items: Array<{
       item_id: string;
       item_name: string;
       price: number;
@@ -72,10 +72,7 @@ export const pushToDataLayer = trackSafely((event: DataLayerEvent) => {
   // Clear previous ecommerce data
   window.dataLayer.push({ ecommerce: null });
   
-  window.dataLayer.push({
-    ...event,
-    pr1: event.event // Ensure pr1 matches event name
-  });
+  window.dataLayer.push(event);
 }, 'pushToDataLayer');
 
 // Wrap all tracking functions with error handling
@@ -85,7 +82,6 @@ export const trackPageView = trackSafely((title: string, path: string) => {
   
   window.dataLayer.push({
     event: 'page_view',
-    pr1: 'page_view',
     page_title: title,
     page_path: path
   });
@@ -118,7 +114,6 @@ export const trackViewItem = trackSafely((product: {
 
   window.dataLayer.push({
     event: 'view_item',
-    pr1: 'view_item',
     ecommerce: {
       currency: product.currency || 'USD',
       value: product.price * (product.quantity || 1),
@@ -169,7 +164,6 @@ export const trackViewItemList = trackSafely((items: Array<{
 
   window.dataLayer.push({
     event: 'view_item_list',
-    pr1: 'view_item_list',
     ecommerce: {
       item_list_name: listName,
       item_list_id: listId,
@@ -191,7 +185,9 @@ export const trackViewItemList = trackSafely((items: Array<{
         affiliation: product.affiliation,
         coupon: product.coupon,
         discount: product.discount,
-        location_id: product.location_id
+        location_id: product.location_id,
+        item_list_name: listName,
+        item_list_id: listId
       })),
     },
   });
@@ -224,7 +220,6 @@ export const trackSelectItem = trackSafely((product: {
 
   window.dataLayer.push({
     event: 'select_item',
-    pr1: 'select_item',
     ecommerce: {
       item_list_name: listName,
       item_list_id: listId,
@@ -283,7 +278,6 @@ export const trackAddToCart = trackSafely((product: {
 
   window.dataLayer.push({
     event: 'add_to_cart',
-    pr1: 'add_to_cart',
     ecommerce: {
       currency: product.currency || 'USD',
       value: product.price * (product.quantity || 1),
@@ -339,7 +333,6 @@ export const trackRemoveFromCart = trackSafely((product: {
 
   window.dataLayer.push({
     event: 'remove_from_cart',
-    pr1: 'remove_from_cart',
     ecommerce: {
       currency: product.currency || 'USD',
       value: product.price * (product.quantity || 1),
@@ -394,7 +387,6 @@ export const trackBeginCheckout = trackSafely((items: Array<{
 
   window.dataLayer.push({
     event: 'begin_checkout',
-    pr1: 'begin_checkout',
     ecommerce: {
       currency,
       value,
@@ -449,7 +441,6 @@ export const trackAddShippingInfo = trackSafely((items: Array<{
 
   window.dataLayer.push({
     event: 'add_shipping_info',
-    pr1: 'add_shipping_info',
     ecommerce: {
       currency,
       value,
@@ -498,7 +489,6 @@ export const trackAddPaymentInfo = trackSafely((items: Array<{
 
   window.dataLayer.push({
     event: 'add_payment_info',
-    pr1: 'add_payment_info',
     ecommerce: {
       currency,
       value,
@@ -553,7 +543,6 @@ export const trackPurchase = trackSafely((transaction: {
 
   window.dataLayer.push({
     event: 'purchase',
-    pr1: 'purchase',
     ecommerce: {
       transaction_id: transaction.id,
       value: transaction.revenue,
@@ -618,7 +607,6 @@ export const trackViewPromotion = trackSafely((promotion: {
 
   window.dataLayer.push({
     event: 'view_promotion',
-    pr1: 'view_promotion',
     ecommerce: {
       promotion_id: promotion.id,
       promotion_name: promotion.name,
@@ -679,7 +667,6 @@ export const trackSelectPromotion = trackSafely((promotion: {
 
   window.dataLayer.push({
     event: 'select_promotion',
-    pr1: 'select_promotion',
     ecommerce: {
       promotion_id: promotion.id,
       promotion_name: promotion.name,
@@ -715,7 +702,6 @@ export const trackCheckoutStep = trackSafely((step: number, stepName: string) =>
 
   window.dataLayer.push({
     event: 'checkout_progress',
-    pr1: 'checkout_progress',
     ecommerce: {
       checkout_step: step,
       checkout_option: stepName
@@ -729,7 +715,6 @@ export const trackCheckoutOption = trackSafely((step: number, option: string) =>
 
   window.dataLayer.push({
     event: 'checkout_option',
-    pr1: 'checkout_option',
     ecommerce: {
       checkout_step: step,
       checkout_option: option
