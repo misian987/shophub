@@ -104,6 +104,14 @@ export const trackViewItem = trackSafely((product: {
   variant?: string;
   list_name?: string;
   list_id?: string;
+  affiliation?: string;
+  coupon?: string;
+  discount?: number;
+  item_category2?: string;
+  item_category3?: string;
+  item_category4?: string;
+  item_category5?: string;
+  location_id?: string;
 }) => {
   // Clear previous ecommerce data
   window.dataLayer.push({ ecommerce: null });
@@ -119,12 +127,20 @@ export const trackViewItem = trackSafely((product: {
         item_name: product.name,
         price: product.price,
         item_category: product.category,
+        item_category2: product.item_category2,
+        item_category3: product.item_category3,
+        item_category4: product.item_category4,
+        item_category5: product.item_category5,
         quantity: product.quantity || 1,
         index: product.index,
         item_brand: product.brand,
         item_variant: product.variant,
         item_list_name: product.list_name,
         item_list_id: product.list_id,
+        affiliation: product.affiliation,
+        coupon: product.coupon,
+        discount: product.discount,
+        location_id: product.location_id
       }],
     },
   });
@@ -139,7 +155,15 @@ export const trackViewItemList = trackSafely((items: Array<{
   index?: number;
   brand?: string;
   variant?: string;
-}>, listName: string = 'Product List', listId?: string) => {
+  item_category2?: string;
+  item_category3?: string;
+  item_category4?: string;
+  item_category5?: string;
+  affiliation?: string;
+  coupon?: string;
+  discount?: number;
+  location_id?: string;
+}>, listName: string = 'Product List', listId?: string, creative_name?: string, creative_slot?: string) => {
   // Clear previous ecommerce data
   window.dataLayer.push({ ecommerce: null });
 
@@ -149,15 +173,25 @@ export const trackViewItemList = trackSafely((items: Array<{
     ecommerce: {
       item_list_name: listName,
       item_list_id: listId,
+      creative_name,
+      creative_slot,
       items: items.map((product, index) => ({
         item_id: product.id,
         item_name: product.name,
         price: product.price,
         item_category: product.category,
+        item_category2: product.item_category2,
+        item_category3: product.item_category3,
+        item_category4: product.item_category4,
+        item_category5: product.item_category5,
         quantity: product.quantity || 1,
         index: index + 1,
         item_brand: product.brand,
         item_variant: product.variant,
+        affiliation: product.affiliation,
+        coupon: product.coupon,
+        discount: product.discount,
+        location_id: product.location_id
       })),
     },
   });
@@ -207,6 +241,18 @@ export const trackAddToCart = trackSafely((product: {
   variant?: string;
   coupon?: string;
   discount?: number;
+  item_category2?: string;
+  item_category3?: string;
+  item_category4?: string;
+  item_category5?: string;
+  item_list_name?: string;
+  item_list_id?: string;
+  affiliation?: string;
+  location_id?: string;
+  creative_name?: string;
+  creative_slot?: string;
+  promotion_id?: string;
+  promotion_name?: string;
 }) => {
   // Clear previous ecommerce data
   window.dataLayer.push({ ecommerce: null });
@@ -222,11 +268,23 @@ export const trackAddToCart = trackSafely((product: {
         item_name: product.name,
         price: product.price,
         item_category: product.category,
+        item_category2: product.item_category2,
+        item_category3: product.item_category3,
+        item_category4: product.item_category4,
+        item_category5: product.item_category5,
         quantity: product.quantity || 1,
         item_brand: product.brand,
         item_variant: product.variant,
+        item_list_name: product.item_list_name,
+        item_list_id: product.item_list_id,
+        affiliation: product.affiliation,
         coupon: product.coupon,
         discount: product.discount,
+        location_id: product.location_id,
+        creative_name: product.creative_name,
+        creative_slot: product.creative_slot,
+        promotion_id: product.promotion_id,
+        promotion_name: product.promotion_name
       }],
     },
   });
@@ -274,6 +332,14 @@ export const trackBeginCheckout = trackSafely((items: Array<{
   variant?: string;
   coupon?: string;
   discount?: number;
+  item_category2?: string;
+  item_category3?: string;
+  item_category4?: string;
+  item_category5?: string;
+  item_list_name?: string;
+  item_list_id?: string;
+  affiliation?: string;
+  location_id?: string;
 }>, currency: string = 'USD') => {
   // Clear previous ecommerce data
   window.dataLayer.push({ ecommerce: null });
@@ -293,11 +359,19 @@ export const trackBeginCheckout = trackSafely((items: Array<{
         item_name: item.name,
         price: item.price,
         item_category: item.category,
+        item_category2: item.item_category2,
+        item_category3: item.item_category3,
+        item_category4: item.item_category4,
+        item_category5: item.item_category5,
         quantity: item.quantity || 1,
         item_brand: item.brand,
         item_variant: item.variant,
+        item_list_name: item.item_list_name,
+        item_list_id: item.item_list_id,
+        affiliation: item.affiliation,
         coupon: item.coupon,
         discount: item.discount,
+        location_id: item.location_id
       })),
     },
   });
@@ -385,6 +459,10 @@ export const trackPurchase = trackSafely((transaction: {
   tax: number;
   shipping: number;
   currency?: string;
+  coupon?: string;
+  affiliation?: string;
+  shipping_tier?: string;
+  payment_type?: string;
   items: Array<{
     id: string;
     name: string;
@@ -395,6 +473,14 @@ export const trackPurchase = trackSafely((transaction: {
     variant?: string;
     coupon?: string;
     discount?: number;
+    item_category2?: string;
+    item_category3?: string;
+    item_category4?: string;
+    item_category5?: string;
+    item_list_name?: string;
+    item_list_id?: string;
+    affiliation?: string;
+    location_id?: string;
   }>;
 }) => {
   // Clear previous ecommerce data
@@ -409,16 +495,28 @@ export const trackPurchase = trackSafely((transaction: {
       tax: transaction.tax,
       shipping: transaction.shipping,
       currency: transaction.currency || 'USD',
+      coupon: transaction.coupon,
+      affiliation: transaction.affiliation,
+      shipping_tier: transaction.shipping_tier,
+      payment_type: transaction.payment_type,
       items: transaction.items.map(item => ({
         item_id: item.id,
         item_name: item.name,
         price: item.price,
         item_category: item.category,
+        item_category2: item.item_category2,
+        item_category3: item.item_category3,
+        item_category4: item.item_category4,
+        item_category5: item.item_category5,
         quantity: item.quantity || 1,
         item_brand: item.brand,
         item_variant: item.variant,
+        item_list_name: item.item_list_name,
+        item_list_id: item.item_list_id,
+        affiliation: item.affiliation,
         coupon: item.coupon,
         discount: item.discount,
+        location_id: item.location_id
       })),
     },
   });
