@@ -170,6 +170,8 @@ export const trackViewItemList = trackSafely((items: Array<{
   window.dataLayer.push({
     event: 'view_item_list',
     ecommerce: {
+      currency: 'USD',
+      value,
       item_list_id: listId,
       item_list_name: listName,
       items: items.map((product, index) => ({
