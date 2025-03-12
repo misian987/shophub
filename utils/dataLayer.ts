@@ -158,17 +158,20 @@ export const trackViewItemList = trackSafely((items: Array<{
   coupon?: string;
   discount?: number;
   location_id?: string;
-}>, listName: string = 'Product List', listId?: string, creative_name?: string, creative_slot?: string) => {
+}>, listName: string = 'Product List', listId?: string) => {
   // Clear previous ecommerce data
   window.dataLayer.push({ ecommerce: null });
+
+  // Calculate total value of items
+  const value = items.reduce((total, item) => 
+    total + (item.price * (item.quantity || 1)), 0
+  );
 
   window.dataLayer.push({
     event: 'view_item_list',
     ecommerce: {
-      item_list_name: listName,
       item_list_id: listId,
-      creative_name,
-      creative_slot,
+      item_list_name: listName,
       items: items.map((product, index) => ({
         item_id: product.id,
         item_name: product.name,
@@ -185,11 +188,10 @@ export const trackViewItemList = trackSafely((items: Array<{
         affiliation: product.affiliation,
         coupon: product.coupon,
         discount: product.discount,
-        location_id: product.location_id,
-        item_list_name: listName,
-        item_list_id: listId
-      })),
-    },
+        item_list_id: listId,
+        item_list_name: listName
+      }))
+    }
   });
 }, 'trackViewItemList');
 
