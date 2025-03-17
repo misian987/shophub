@@ -43,7 +43,7 @@ jobs:
           path: ./out
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v1
         with:
           name: build-output
           path: ./out
